@@ -1,9 +1,7 @@
-// Load repositories on page load
 window.addEventListener('DOMContentLoaded', () => {
     loadRepositories();
 });
 
-// Upload form handler
 document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -39,8 +37,7 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             `;
             showResult(message, 'success');
             addMessage(`Repository "${repositoryName}" created and data uploaded successfully!`, 'bot');
-            
-            // Refresh repositories list
+
             setTimeout(() => loadRepositories(), 1000);
         } else {
             showResult('❌ Error: ' + JSON.stringify(result), 'error');
@@ -50,7 +47,6 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     }
 });
 
-// Load repositories
 async function loadRepositories() {
     try {
         const response = await fetch('/api/repositories', { method: 'POST' });
@@ -75,7 +71,6 @@ async function loadRepositories() {
     }
 }
 
-// Send SPARQL query
 async function sendQuery() {
     const query = document.getElementById('chatInput').value.trim();
     const repository = document.getElementById('chatRepository').value;
@@ -91,11 +86,9 @@ async function sendQuery() {
         return;
     }
 
-    // Add user message
     addMessage(query, 'user');
     document.getElementById('chatInput').value = '';
 
-    // Check if it's natural language or SPARQL (only for simple execute)
     const isSparql = query.trim().toUpperCase().match(/^(SELECT|ASK|CONSTRUCT|DESCRIBE|PREFIX)/);
 
     let loadingText = '⏳ Executing query...';
@@ -107,7 +100,6 @@ async function sendQuery() {
         loadingText = '🔌 Using GraphDB Plugin Retrieval...';
     }
 
-    // Add loading message
     const loadingDiv = document.createElement('div');
     loadingDiv.className = 'loading';
     loadingDiv.textContent = loadingText;
@@ -131,26 +123,21 @@ async function sendQuery() {
         loadingDiv.remove();
 
         if (response.ok) {
-            // Show generated SPARQL if it was natural language (only for simple execute)
             if (retrievalMethod === 'execute_sparql' && !isSparql && data.generatedSparql) {
                 addMessage(`✨ Generated SPARQL query:\n<pre>${escapeHtml(data.generatedSparql)}</pre>`, 'bot');
             }
 
-            // Show natural language response if available
             if (data.naturalResponse && data.naturalResponse.trim() !== '') {
                 addMessage(`💬 ${data.naturalResponse}`, 'bot');
             }
 
-            // Try to format the result nicely
             let resultText = data.result;
 
-            // If it's JSON, pretty print it
             try {
                 const jsonResult = JSON.parse(resultText);
                 resultText = JSON.stringify(jsonResult, null, 2);
                 addMessage(`📊 Raw Results:\n<pre>${escapeHtml(resultText)}</pre>`, 'bot');
             } catch {
-                // Not JSON, just display as is
                 addMessage(`📊 Raw Results:\n<pre>${escapeHtml(resultText)}</pre>`, 'bot');
             }
         } else {
@@ -162,7 +149,6 @@ async function sendQuery() {
     }
 }
 
-// Add message to chat
 function addMessage(text, sender) {
     const chatBox = document.getElementById('chatBox');
     const messageDiv = document.createElement('div');
@@ -172,27 +158,23 @@ function addMessage(text, sender) {
     scrollToBottom();
 }
 
-// Scroll chat to bottom
 function scrollToBottom() {
     const chatBox = document.getElementById('chatBox');
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Show result message
 function showResult(message, type) {
     const resultDiv = document.getElementById('uploadResult');
     resultDiv.innerHTML = message;
     resultDiv.className = `result ${type}`;
 }
 
-// Escape HTML
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
-// Allow Enter to send (Ctrl+Enter for new line)
 document.getElementById('chatInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.ctrlKey && !e.shiftKey) {
         e.preventDefault();
