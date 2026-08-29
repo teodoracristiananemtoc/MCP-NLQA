@@ -66,8 +66,4 @@ This launches `MCPServer.exe` as a child process and exchanges JSON-RPC messages
    - opens your browser automatically.
 4. Upload invoice JSON and run natural-language / SPARQL queries from the UI.
 
-## Git notes
 
-- Commit `MCPClient`, `MCPServer`, and `GraphTools` as sibling projects under `invoice/`.
-- Don't commit `bin/`, `obj/`, or `... - Copy` scratch folders.
-- The client project is named `MCPClient` (`MCPClient.csproj` / `.sln`, namespace `MCPClient`); the MCPSharp client type is aliased as `McpSharpClient` in `Program.cs` to avoid a naming clash.
